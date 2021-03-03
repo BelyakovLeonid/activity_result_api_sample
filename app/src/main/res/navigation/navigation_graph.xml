@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/action_camera">
+
+    <fragment
+        android:id="@+id/action_camera"
+        android:name="com.example.activityresultapp.CameraFragment"
+        android:label="CameraFragment" />
+
+    <fragment
+        android:id="@+id/action_custom"
+        android:name="com.example.activityresultapp.CustomFragment"
+        android:label="CustomFragment" />
+</navigation>
