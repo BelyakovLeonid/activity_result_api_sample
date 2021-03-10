@@ -17,10 +17,11 @@ class SecondActivity : AppCompatActivity(R.layout.activity_second) {
         }
 
         buttonGetResult.setOnClickListener {
-            setResult(
-                Activity.RESULT_OK,
-                Intent().putExtra(SecondActivityContract.RESULT_KEY, 42)
+            val result = Intent().putExtra(
+                SecondActivityContract.RESULT_KEY,
+                enterResultText.text.toString().toIntOrNull()
             )
+            setResult(Activity.RESULT_OK, result)
             finish()
         }
     }
