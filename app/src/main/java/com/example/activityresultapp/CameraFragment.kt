@@ -25,10 +25,10 @@ class CameraFragment : Fragment(R.layout.f_camera) {
             }
             !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
                 // user denied permission and set Don't ask again.
-                DontAskAgainFragment().show(parentFragmentManager, DontAskAgainFragment.TAG)
+                showSettingsDialog()
             }
             else -> {
-                Toast.makeText(context, R.string.denied_toast, Toast.LENGTH_SHORT).show()
+                showToast(R.string.denied_toast)
             }
         }
     }
@@ -39,7 +39,7 @@ class CameraFragment : Fragment(R.layout.f_camera) {
             setImageIsVisible(true)
         } else {
             // something was wrong
-            Toast.makeText(context, R.string.something_wrong, Toast.LENGTH_SHORT).show()
+            showToast(R.string.something_wrong)
         }
     }
 
@@ -49,7 +49,7 @@ class CameraFragment : Fragment(R.layout.f_camera) {
         cameraButton.setOnClickListener {
             if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                 // we need to tell user why do we need permission
-                RationaleFragment().show(parentFragmentManager, RationaleFragment.TAG)
+                showRationaleDialog()
             } else {
                 cameraPermission.launch(Manifest.permission.CAMERA)
             }
@@ -71,6 +71,18 @@ class CameraFragment : Fragment(R.layout.f_camera) {
                 openSettings()
             }
         }
+    }
+
+    private fun showToast(textId: Int) {
+        Toast.makeText(context, textId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showRationaleDialog() {
+        RationaleFragment().show(parentFragmentManager, RationaleFragment.TAG)
+    }
+
+    private fun showSettingsDialog() {
+        DontAskAgainFragment().show(parentFragmentManager, DontAskAgainFragment.TAG)
     }
 
     private fun openSettings() {
