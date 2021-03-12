@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview
 import androidx.activity.result.launch
 import androidx.core.view.isVisible
@@ -17,13 +16,7 @@ import kotlinx.android.synthetic.main.f_camera.*
 
 class CameraFragment : Fragment(R.layout.f_camera) {
 
-    private val cameraPermission = registerForActivityResult(RequestPermission()) { granted ->
-        when {
-            granted -> cameraShot.launch()
-            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> showSettingsDialog()
-            else -> showToast(R.string.denied_toast)
-        }
-    }
+    lateinit var permissionHelper: PermissionHelper
 
     private val cameraShot = registerForActivityResult(TakePicturePreview()) { bitmap ->
         if (bitmap != null) {
@@ -35,15 +28,22 @@ class CameraFragment : Fragment(R.layout.f_camera) {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHelper = registerPermissionHelper(
+            Manifest.permission.CAMERA,
+            onGranted = { cameraShot.launch() },
+            onRefused = { showToast(R.string.denied_toast) },
+            onDoNotAskAgain = ::showSettingsDialog,
+            onShouldShowRationale = ::showRationaleDialog
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         cameraButton.setOnClickListener {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                showRationaleDialog()
-            } else {
-                cameraPermission.launch(Manifest.permission.CAMERA)
-            }
+            permissionHelper.requestPermission()
         }
 
         closeButton.setOnClickListener {
@@ -53,7 +53,7 @@ class CameraFragment : Fragment(R.layout.f_camera) {
         setFragmentResultListener(RATIONALE_KEY) { _, bundle ->
             val isWantToAllowAfterRationale = bundle.getBoolean(RESULT_KEY)
             if (isWantToAllowAfterRationale) {
-                cameraPermission.launch(Manifest.permission.CAMERA)
+                permissionHelper.requestPermission(false)
             }
         }
         setFragmentResultListener(SETTINGS_KEY) { _, bundle ->
