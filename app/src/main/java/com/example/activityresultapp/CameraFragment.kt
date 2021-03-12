@@ -19,17 +19,9 @@ class CameraFragment : Fragment(R.layout.f_camera) {
 
     private val cameraPermission = registerForActivityResult(RequestPermission()) { granted ->
         when {
-            granted -> {
-                // user granted permission
-                cameraShot.launch()
-            }
-            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                // user denied permission and set Don't ask again.
-                showSettingsDialog()
-            }
-            else -> {
-                showToast(R.string.denied_toast)
-            }
+            granted -> cameraShot.launch()
+            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> showSettingsDialog()
+            else -> showToast(R.string.denied_toast)
         }
     }
 
@@ -48,7 +40,6 @@ class CameraFragment : Fragment(R.layout.f_camera) {
 
         cameraButton.setOnClickListener {
             if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                // we need to tell user why do we need permission
                 showRationaleDialog()
             } else {
                 cameraPermission.launch(Manifest.permission.CAMERA)
